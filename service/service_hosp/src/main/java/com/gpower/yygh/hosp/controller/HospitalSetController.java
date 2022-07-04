@@ -121,8 +121,8 @@ public class HospitalSetController {
 
     }
     //9发送签名的密钥
-    @PutMapping("lockHospitalSet/{id}/{status}")
-    public Result lockHospitalSet(@PathVariable Long id){
+    @PutMapping("sendSignKey/{id}/{status}")
+    public Result sendSignKey(@PathVariable Long id){
         // 根据id查询医院设置信息
         HospitalSet hospitalSet = hospitalSetService.getById(id);
         String signKey = hospitalSet.getSignKey();
