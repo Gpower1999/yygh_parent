@@ -1,6 +1,8 @@
-package com.atguigu.hospital.util;
+package com.gpower.yygh.hosp.common.helper;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gpower.yygh.hosp.common.utils.HttpUtil;
+import com.gpower.yygh.hosp.common.utils.MD5;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -11,15 +13,14 @@ import java.util.TreeMap;
 @Slf4j
 public class HttpRequestHelper {
 
-    //private final static String signKey = "09c1ff67d1ae4999e137f34b0dff1046";
-
     public static void main(String[] args) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("d", "4");
         paramMap.put("b", "2");
         paramMap.put("c", "3");
         paramMap.put("a", "1");
-        log.info(getSign(paramMap, ""));
+        paramMap.put("timestamp", getTimestamp());
+        log.info(getSign(paramMap, "111111111"));
     }
 
     /**
@@ -38,6 +39,7 @@ public class HttpRequestHelper {
     /**
      * 请求数据获取签名
      * @param paramMap
+     * @param signKey
      * @return
      */
     public static String getSign(Map<String, Object> paramMap, String signKey) {
@@ -51,7 +53,7 @@ public class HttpRequestHelper {
         }
         str.append(signKey);
         log.info("加密前：" + str.toString());
-        String md5Str = MD5.encrypt(signKey);
+        String md5Str = MD5.encrypt(str.toString());
         log.info("加密后：" + md5Str);
         return md5Str;
     }
@@ -59,6 +61,7 @@ public class HttpRequestHelper {
     /**
      * 签名校验
      * @param paramMap
+     * @param signKey
      * @return
      */
     public static boolean isSignEquals(Map<String, Object> paramMap, String signKey) {

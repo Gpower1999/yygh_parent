@@ -1,4 +1,4 @@
-package com.atguigu.hospital.util;
+package com.gpower.yygh.hosp.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,7 +55,6 @@ public final class HttpUtil {
 			httpcon.setConnectTimeout(CONN_TIMEOUT);
 			httpcon.setReadTimeout(READ_TIMEOUT);
 			httpcon.setRequestMethod(reqmethod);
-			httpcon.setRequestProperty("Content-Type","application/json");
 			httpcon.connect();
 			if (reqmethod.equalsIgnoreCase(POST)) {
 				OutputStream os = httpcon.getOutputStream();
