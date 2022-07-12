@@ -32,6 +32,10 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.gpower.yygh</groupId>
+            <artifactId>service-util</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>
