@@ -2,6 +2,8 @@ package com.gpower.yygh.order.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.gpower.common.rabbit.constant.MqConst;
+import com.gpower.common.rabbit.service.RabbitService;
 import com.gpower.yygh.common.exception.YyghException;
 import com.gpower.yygh.common.result.ResultCodeEnum;
 import com.gpower.yygh.enums.OrderStatusEnum;
@@ -13,6 +15,8 @@ import com.gpower.yygh.order.mapper.OrderMapper;
 import com.gpower.yygh.order.service.OrderService;
 import com.gpower.yygh.user.client.PatientFeignClient;
 import com.gpower.yygh.vo.hosp.ScheduleOrderVo;
+import com.gpower.yygh.vo.msm.MsmVo;
+import com.gpower.yygh.vo.order.OrderMqVo;
 import com.gpower.yygh.vo.order.SignInfoVo;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +33,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo> implem
     private PatientFeignClient patientFeignClient;
     @Autowired
     private HospitalFeignClient hospitalFeignClient;
+    @Autowired
+    private RabbitService rabbitService;
     @Override
     public Long saveOrder(String scheduleId, Long patientId) {
         //获取就诊人信息
@@ -42,7 +48,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo> implem
                 || new DateTime(scheduleOrderVo.getEndTime()).isBeforeNow()) {
             throw new YyghException(ResultCodeEnum.TIME_NO);
         }
+
         //获取签名信息
+
         SignInfoVo signInfoVo = hospitalFeignClient.getSignInfoVo(scheduleOrderVo.getHoscode());
 
         //添加到订单表
@@ -110,6 +118,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo> implem
             //排班剩余预约数
             Integer availableNumber = jsonObject.getInteger("availableNumber");
             //发送mq信息更新号源和短信通知
+            //发送mq信息更新号源
+            OrderMqVo orderMqVo = new OrderMqVo();
+            orderMqVo.setScheduleId(scheduleId);
+            orderMqVo.setReservedNumber(reservedNumber);
+            orderMqVo.setAvailableNumber(availableNumber);
+            //短信提示
+            MsmVo msmVo = new MsmVo();
+            msmVo.setPhone(orderInfo.getPatientPhone());
+            msmVo.setTemplateCode("SMS_194640721");
+            String reserveDate =
+                    new DateTime(orderInfo.getReserveDate()).toString("yyyy-MM-dd")
+                            + (orderInfo.getReserveTime()==0 ? "上午": "下午");
+            Map<String,Object> param = new HashMap<String,Object>(){{
+                put("title", orderInfo.getHosname()+"|"+orderInfo.getDepname()+"|"+orderInfo.getTitle());
+                put("amount", orderInfo.getAmount());
+                put("reserveDate", reserveDate);
+                put("name", orderInfo.getPatientName());
+                put("quitTime", new DateTime(orderInfo.getQuitTime()).toString("yyyy-MM-dd HH:mm"));
+            }};
+            msmVo.setParam(param);
+
+            orderMqVo.setMsmVo(msmVo);
+            rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ORDER, MqConst.ROUTING_ORDER, orderMqVo);
 
 
 
