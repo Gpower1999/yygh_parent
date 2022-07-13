@@ -1,6 +1,7 @@
 package com.gpower.yygh.hosp.service;
 
 import com.gpower.yygh.model.hosp.Schedule;
+import com.gpower.yygh.vo.hosp.ScheduleOrderVo;
 import com.gpower.yygh.vo.hosp.ScheduleQueryVo;
 import org.springframework.data.domain.Page;
 
@@ -15,4 +16,10 @@ public interface ScheduleService {
     Map<String, Object> getRuleSchedule(long page, long limit, String hoscode, String depcode);
 
     List<Schedule> getScheduleDatail(String hoscode, String depcode, String workDate);
+
+    Map<String, Object> getBookingScheduleRule(Integer page, Integer limit, String hoscode, String depcode);
+
+    Schedule getById(String scheduleId);
+
+    ScheduleOrderVo getScheduleOrderVo(String scheduleId);
 }

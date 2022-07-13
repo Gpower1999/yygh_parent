@@ -9,14 +9,27 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>service_user</artifactId>
+    <artifactId>service_order</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.gpower.yygh</groupId>
             <artifactId>service_cmn_client</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.gpower.yygh</groupId>
+            <artifactId>service-user-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gpower.yygh</groupId>
+            <artifactId>service-hosp-client</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
-
-
 </project>
